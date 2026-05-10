@@ -1,0 +1,9 @@
+1. 前后端分离
+后端（FastAPI，端口 8000）通过 REST API 提供业务逻辑、数据库操作和 LLM 调用；前端（Streamlit，独立进程）负责 UI 渲染。二者通过 HTTP + JSON/SSE 流式协议通信，可独立开发部署。
+
+2. 历史对话存储与复用
+采用双层存储：
+
+sever.db（SQLAlchemy ORM）：存储消息记录，供前端展示
+conversations.db（AdvancedSQLiteSession）：存储 LLM 对话上下文
+每次调用 Runner.run_streamed() 时，AdvancedSQLiteSession 自动加载该 session 的全部历史上下文，连同 system prompt 和当前用户输入一起传给大模型，实现多轮对话。
